@@ -22,7 +22,7 @@ func NewPrometheusWatcher(prom *PrometheusProcess) *PrometheusWatcher {
 }
 
 func (w *PrometheusWatcher) checkPrometheusHealthy() (string, error) {
-	client := &http.Client{}
+	client := &http.Client{Timeout: time.Duration(2 * time.Second)}
 	// Build the request
 
 	request, err := http.NewRequest("GET", w.prom.baseUrl+"/-/healthy", nil)
@@ -34,7 +34,7 @@ func (w *PrometheusWatcher) checkPrometheusHealthy() (string, error) {
 	response, err2 := client.Do(request)
 	if err2 != nil {
 		logrus.Warnf("send prometheus healthy heartbeat error: %v", err)
-		return "down", err
+		return "down", err2
 	}
 	// Check http response status
 	if response.StatusCode != http.StatusOK {
@@ -73,5 +73,6 @@ func (w *PrometheusWatcher) WatchPrometheus() error {
 }
 
 func (w *PrometheusWatcher) restartPrometheus() error {
-	return nil
+	logrus.Info("restart prometheus")
+	return w.prom.restart()
 }
