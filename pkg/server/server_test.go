@@ -1,9 +1,9 @@
 package server
 
 import (
-	"RexPromAgent/config"
-	"RexPromAgent/configgen/promconfig"
-	"RexPromAgent/log"
+	"RexPromAgent/pkg/config"
+	"RexPromAgent/pkg/log"
+	"RexPromAgent/pkg/prometheus/promconfig"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -48,6 +48,7 @@ func TestAlertSync(t *testing.T) {
 	if err != nil {
 		t.Errorf("yml file format error , %s", err)
 	}
+	fmt.Println(len(c.Groups))
 
 }
 

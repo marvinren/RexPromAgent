@@ -1,7 +1,7 @@
 package server
 
 import (
-	"RexPromAgent/db"
+	"RexPromAgent/pkg/db"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"RexPromAgent/config"
-	"RexPromAgent/log"
-	"RexPromAgent/server"
+	"RexPromAgent/pkg/config"
+	"RexPromAgent/pkg/log"
+	"RexPromAgent/pkg/server"
 )
 
 func main() {

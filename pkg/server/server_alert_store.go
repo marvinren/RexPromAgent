@@ -1,7 +1,7 @@
 package server
 
 import (
-	"RexPromAgent/db"
+	"RexPromAgent/pkg/db"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

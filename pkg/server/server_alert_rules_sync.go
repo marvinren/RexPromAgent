@@ -1,8 +1,8 @@
 package server
 
 import (
-	"RexPromAgent/configgen/promconfig"
-	"RexPromAgent/db"
+	"RexPromAgent/pkg/db"
+	"RexPromAgent/pkg/prometheus/promconfig"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"net/http"

@@ -1,7 +1,7 @@
 package store
 
 import (
-	"RexPromAgent/db"
+	"RexPromAgent/pkg/db"
 )
 
 type Storer struct {

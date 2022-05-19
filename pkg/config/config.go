@@ -37,6 +37,7 @@ func Initialize() *Config {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("../.")
 	viper.AddConfigPath("../../.")
+	viper.AddConfigPath("../../../.")
 
 	viper.SetDefault("server.address", ":9093")
 	viper.SetDefault("database.maxIdleConns", 3)
