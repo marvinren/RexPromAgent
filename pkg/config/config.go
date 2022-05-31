@@ -23,6 +23,8 @@ type Database struct {
 type Prometheus struct {
 	prometheusConfigPath string
 	alertRulesConfigPath string
+	alertmgrUrl          string
+	prometheusUrl        string
 }
 
 type Server struct {
@@ -39,7 +41,7 @@ func Initialize() *Config {
 	viper.AddConfigPath("../../.")
 	viper.AddConfigPath("../../../.")
 
-	viper.SetDefault("server.address", ":9093")
+	viper.SetDefault("server.address", ":19090")
 	viper.SetDefault("database.maxIdleConns", 3)
 	viper.SetDefault("database.maxOpenConns", 64)
 	viper.SetDefault("database.connMaxLifetime", 10)

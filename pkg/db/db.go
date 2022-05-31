@@ -10,7 +10,7 @@ import (
 	"time"
 )
 import (
-	_ "RexPromAgent/config"
+	_ "RexPromAgent/pkg/config"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -177,7 +177,7 @@ func (s MySQLDB) FetchAlerts(alerts *[]AlertRule) error {
 	return s.unitOfWork(func(tx *sql.Tx) error {
 		var alertRule AlertRule
 
-		rows, err2 := tx.Query("select rule_id, alert_name, expression, duration, alert_level, alert_type, noitce, description, create_uid, state, create_time, update_uid, update_time, tenant_code, project_id, system_id from t_alert_rule where state='U' or state is null")
+		rows, err2 := tx.Query("select rule_id, alert_name, expression, duration, alert_level, alert_type, noitce, receiver, description, create_uid, state, create_time, update_uid, update_time, tenant_code, project_id, system_id from t_alert_rule where state='U' or state is null")
 
 		if err2 != nil {
 			return fmt.Errorf("failed to insert into AlertGroups: %s", err2)
@@ -185,7 +185,7 @@ func (s MySQLDB) FetchAlerts(alerts *[]AlertRule) error {
 		for rows.Next() {
 			alertRule = AlertRule{}
 			err3 := rows.Scan(&alertRule.RuleId, &alertRule.AlertName, &alertRule.Expression, &alertRule.Duration,
-				&alertRule.AlertLevel, &alertRule.AlertType, &alertRule.Notice, &alertRule.Description, &alertRule.CreateUID,
+				&alertRule.AlertLevel, &alertRule.AlertType, &alertRule.Notice, &alertRule.Receiver, &alertRule.Description, &alertRule.CreateUID,
 				&alertRule.State, &alertRule.CreateTime, &alertRule.UpdateUID, &alertRule.UpdateTime, &alertRule.TenantCode,
 				&alertRule.ProjectID, &alertRule.SystemID)
 			if err3 != nil {

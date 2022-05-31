@@ -1,0 +1,75 @@
+---
+- name: "Check if prometheus binary tar file exists"
+  become: false
+  stat:
+    path: "{{download_tmp_dir}}/prometheus-{{prometheus_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz"
+  register: __prometheus_tar_downloaded
+  delegate_to: localhost
+  check_mode: false
+  when: not __prometheus_is_installed.stat.exists
+
+- name: "Download the prometheus installed binary tar"
+  become: false
+  get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v{{prometheus_version}}/prometheus-{{prometheus_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz"
+    dest: '{{download_tmp_dir}}/prometheus-{{prometheus_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+    mode: '0644'
+  register: _download_binary
+  until: _download_binary is succeeded
+  retries: 3
+  delay: 2
+  delegate_to: localhost
+  check_mode: false
+  when: (not __prometheus_is_installed.stat.exists) and (not  __prometheus_tar_downloaded.stat.exists)
+
+- name: "Make installed directory"
+  file:
+    path: "{{prometheus_installed_path}}"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+  when: not __prometheus_is_installed.stat.exists
+
+
+- name: Unpack prometheus binary
+  unarchive:
+    src: '{{download_tmp_dir}}/prometheus-{{prometheus_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+    dest: '{{prometheus_installed_path}}'
+    mode: 0755
+    copy: yes
+  check_mode: false
+  when: not __prometheus_is_installed.stat.exists
+
+- name: Register the prometheus binary directory
+  stat:
+    path: "{{prometheus_base_dir}}"
+  register: _prometheus_binary_install_dir
+
+- name: Create Data directory
+  file:
+    path: "{{prometheus_db_dir}}"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+
+- name: Create Configuration directory
+  file:
+    path: "{{prometheus_config_dir}}"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+
+
+- name: create systemd service unit
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+  - restart prometheus
+

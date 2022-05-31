@@ -1,0 +1,16 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=RexPromAgent for Prometheus monitoring
+After=network-online.target
+
+[Service]
+Restart=on-failur
+ExecStop=/bin/kill -9 $MAINPID
+User=root
+Group=root
+WorkingDirectory={{rexpromagent_installed_dir}}
+ExecStart={{rexpromagent_installed_dir}}/rexpromagent_{{system_type}}_{{system_cpu_arch}}
+
+[Install]
+WantedBy=multi-user.target

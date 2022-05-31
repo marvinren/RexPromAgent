@@ -10,6 +10,10 @@ buildLinux:
 	cp config.toml bin/.
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/rexpromagent_linux_amd64 main.go
 
+buildLinuxARM64:
+	cp config.toml bin/.
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/rexpromagent_linux_arm64 main.go
+
 tool:
 	go tool vet . |&amp; grep -v vendor; true
 	gofmt -w .

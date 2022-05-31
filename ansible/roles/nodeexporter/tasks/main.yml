@@ -1,0 +1,92 @@
+---
+- name: Assert usage of systemd as an init system
+  assert:
+    that: ansible_service_mgr == 'systemd'
+    msg: "this playbook only works with systemd"
+
+- name: Get systemd version
+  command: systemctl --version
+  changed_when: false
+  check_mode: false
+  register: __systemd_version
+  tags:
+    - skip_ansible_lint
+
+
+- name: Set systemd version fact
+  set_fact:
+    node_exporter_systemd_version: "{{ __systemd_version.stdout_lines[0] | regex_replace('^systemd\\s(\\d+).*$', '\\1') }}"
+
+
+- name: Check if node_exporter is installed
+  stat:
+    path: "{{_node_exporter_binary_install_dir}}/node_exporter"
+  register: __node_exporter_is_installed
+  check_mode: false
+  tags:
+    - node_exporter_install
+
+- name: file_status - display on screen
+  debug:
+    msg: "{{ __node_exporter_is_installed }}"
+
+- name: "Make installed directory"
+  file:
+    path: "{{_node_exporter_binary_install_dir}}"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+
+- name: "Check if node_exporter binary tar file exists"
+  become: false
+  stat:
+    path: '{{download_tmp_dir}}/node_exporter-{{node_exporter_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+  register: __node_exporter_tar_downloaded
+  delegate_to: localhost
+  check_mode: false
+  when: not __node_exporter_is_installed.stat.exists
+
+- name: Download the NodeExporter binary to local folder
+  become: false
+  get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v{{node_exporter_version}}/node_exporter-{{node_exporter_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz"
+    dest: '{{download_tmp_dir}}/node_exporter-{{node_exporter_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+    mode: '0644'
+  register: _download_binary
+  until: _download_binary is succeeded
+  retries: 3
+  delay: 2
+  delegate_to: localhost
+  check_mode: false
+  when: (not __node_exporter_is_installed.stat.exists) and (not __node_exporter_tar_downloaded.stat.exists)
+
+- name: Unpack NodeExporter binary to remote
+  unarchive:
+    src: '/tmp/node_exporter-{{node_exporter_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+    dest: "{{node_exporter_installed_path}}"
+    mode: 0755
+    owner: root
+    group: root
+  when: not __node_exporter_is_installed.stat.exists
+
+- name: Copy the node_exporter systemd service file
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart node_exporter
+  
+- name: Create node_exporter config directory
+  file:
+    path: "/etc/node_exporter"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+
+
+  
+

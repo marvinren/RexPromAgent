@@ -3,10 +3,15 @@ address=":19091"
 
 [database]
 driver = "mysql"
-dsn = "root:mysql@123@tcp(192.168.48.10:3306)/aiops_dev?charset=utf8&parseTime=True"
+# dsn = "root:mysql@123@tcp(192.168.48.10:3306)/aiops_dev?charset=utf8&parseTime=True"
+dsn = "root:root+654321@tcp(192.168.48.2:13306)/tools?charset=utf8&parseTime=True"
 
 [prometheus]
 prometheusUrl = "http://localhost:9090"
+alertmgrUrl = "http://localhost:9093"
 prometheusBasePath = "/Users/renzhiqiang/Workspace/self_lab/prometheus/prometheus-2.34.0.darwin-arm64"
 prometheusConfigPath = "/Users/renzhiqiang/Workspace/self_lab/prometheus/prometheus-2.34.0.darwin-arm64/prometheus.yml"
+# alertRulesConfigPath = "/Users/renzhiqiang/Workspace/self_lab/prometheus/prometheus-2.34.0.darwin-arm64/rules/alert_rules.yml"
+# alertMgrConfigPath = "/Users/renzhiqiang/Workspace/self_lab/prometheus/alertmanager-0.24.0.darwin-arm64/alertmanager.yml"
 alertRulesConfigPath = "./alert_rules.yml"
+alertMgrConfigPath = "./alertmanager.yml"

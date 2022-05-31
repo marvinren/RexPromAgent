@@ -1,0 +1,20 @@
+---
+# handlers file for server
+- name: enable rexpromagent
+  service:
+    name: rexpromagent
+    daemon_reload: true
+    enabled: yes
+  become: yes
+
+- name: restart rexpromagent
+  service:
+    name: rexpromagent
+    state: restarted
+  become: yes
+
+- name: reload rexpromagent
+  service:
+    name: rexpromagent
+    state: reloaded
+  become: yes

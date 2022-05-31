@@ -1,0 +1,64 @@
+---
+- name: "Check if alertmanage binary tar file exists"
+  become: false
+  stat:
+    path: '{{download_tmp_dir}}/alertmanager-{{alertmanager_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+  register: __alertmanage_tar_downloaded
+  delegate_to: localhost
+  check_mode: false
+  when: not __alertmanager_is_installed.stat.exists
+  
+- name: "Download the alertmanage installed binary tar"
+  become: false
+  get_url:
+    url: "https://github.com/prometheus/alertmanager/releases/download/v{{alertmanager_version}}/alertmanager-{{alertmanager_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz"
+    dest: '{{download_tmp_dir}}/alertmanager-{{alertmanager_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+    mode: '0644'
+  register: _download_binary
+  until: _download_binary is succeeded
+  retries: 3
+  delay: 2
+  delegate_to: localhost
+  check_mode: false
+  when: (not __alertmanager_is_installed.stat.exists) and (not __alertmanage_tar_downloaded.stat.exists)
+
+- name: "Make installed directory"
+  file:
+    path: "{{alertmanager_installed_path}}"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+  when: not __alertmanager_is_installed.stat.exists
+
+- name: "Make installed data directory"
+  file:
+    path: "{{alertmanager_db_dir}}"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+  when: not __alertmanager_is_installed.stat.exists
+
+
+- name: Unpack alertmanager binary
+  unarchive:
+    src: '{{download_tmp_dir}}/alertmanager-{{alertmanager_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+    dest: '{{alertmanager_installed_path}}'
+    mode: 0755
+    copy: yes
+  check_mode: false
+  when: not __alertmanager_is_installed.stat.exists
+
+- name: create systemd service unit
+  template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+  - restart alertmanager
+  tags:
+  - install
+  - service

@@ -1,0 +1,73 @@
+---
+- name: "Check if remote grafana is installed."
+  stat:
+    path: "{{grafana_installed_path}}/grafana-{{grafana_version}}"
+  register: __grafana_is_installed
+  check_mode: false
+
+- name: "Check if grafana binary tar file exists"
+  become: false
+  stat:
+    path: "{{download_tmp_dir}}/grafana-enterprise-{{grafana_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz"
+  register: __grafana_tar_downloaded
+  delegate_to: localhost
+  check_mode: false
+  when: not __grafana_is_installed.stat.exists
+  
+- name: "Download the grafana binary tar file."
+  become: false
+  get_url:
+    url: "https://dl.grafana.com/enterprise/release/grafana-enterprise-{{grafana_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz"
+    dest: '{{download_tmp_dir}}/grafana-enterprise-{{grafana_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+    mode: '0644'
+  register: _download_binary
+  until: _download_binary is succeeded
+  retries: 3
+  delay: 2
+  delegate_to: localhost
+  check_mode: false
+  when: (not __grafana_is_installed.stat.exists) and (not __grafana_tar_downloaded.stat.exists)
+
+
+- name: "Make installed directory"
+  file:
+    path: "{{grafana_installed_path}}"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+  when: not __grafana_is_installed.stat.exists
+
+- name: Unpack grafana binary
+  unarchive:
+    src: '{{download_tmp_dir}}/grafana-enterprise-{{grafana_version}}.{{system_type}}-{{system_cpu_arch}}.tar.gz'
+    dest: '{{grafana_installed_path}}'
+    mode: 0755
+    copy: yes
+  check_mode: false
+  when: not __grafana_is_installed.stat.exists
+
+
+- name: create grafana defaults config.
+  template:
+    src: defaults.ini.j2
+    dest: "{{grafana_installed_path}}/grafana-{{grafana_version}}/conf/defaults.ini"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: create systemd service unit
+  template:
+    src: grafana.service.j2
+    dest: /etc/systemd/system/grafana.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+  - restart grafana
+
+- name: Create the prometheus datasource
+  import_tasks: datasources.yml
+
+- name: Import the prometheus dashboard
+  import_tasks: dashboard.yml

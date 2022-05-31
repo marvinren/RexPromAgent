@@ -1,0 +1,32 @@
+---
+- name: copy the agent binary
+  copy:
+    src: rexpromagent_{{system_type}}_{{system_cpu_arch}}
+    dest: "{{rexpromagent_installed_dir}}/."
+    mode: 0755
+    owner: root
+    group: root
+  check_mode: false
+  notify:
+  - restart rexpromagent
+
+- name: configure agent
+  template:
+    src: "config.toml.j2"
+    dest: "{{ rexpromagent_installed_dir }}/config.toml"
+    force: true
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+  - restart rexpromagent
+
+- name: create systemd service unit
+  template:
+    src: rexpromagent.service.j2
+    dest: /etc/systemd/system/rexpromagent.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+  - restart rexpromagent

@@ -1,0 +1,8 @@
+---
+download_tmp_dir: /tmp
+prometheus_web_listen_address: ":19090"
+prometheus_version: 2.35.0
+prometheus_installed_path: /usr/local/yucc
+prometheus_base_dir: '{{prometheus_installed_path}}/prometheus-{{prometheus_version}}.{{system_type}}-{{system_cpu_arch}}'
+prometheus_db_dir: '{{prometheus_base_dir}}/data'
+prometheus_config_dir: '{{prometheus_base_dir}}/config'

@@ -1,0 +1,8 @@
+---
+download_tmp_dir: /tmp
+alertmanager_web_listen_address: ":19093"
+alertmanager_version: 0.24.0
+alertmanager_installed_path: '/usr/local/yucc'
+alertmanager_base_dir: '{{alertmanager_installed_path}}/alertmanager-{{alertmanager_version}}.{{system_type}}-{{system_cpu_arch}}'
+alertmanager_db_dir: '{{alertmanager_base_dir}}/data'
+alertmanager_config_dir: '{{alertmanager_base_dir}}/config'

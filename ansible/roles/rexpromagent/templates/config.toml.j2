@@ -1,0 +1,14 @@
+[server]
+address=":19091"
+
+[database]
+driver = "mysql"
+dsn = "{{alert_db_dns}}"
+
+[prometheus]
+prometheusUrl = "{{prometheus_db_url}}"
+alertmgrUrl = "{{alertmanager_api_url}}"
+prometheusBasePath = "{{base_installed_path}}/prometheus-{{prometheus_version}}.{{system_type}}-{{system_cpu_arch}}"
+prometheusConfigPath = "{{base_installed_path}}/prometheus-{{prometheus_version}}.{{system_type}}-{{system_cpu_arch}}/config/prometheus.yml"
+alertRulesConfigPath = "{{base_installed_path}}/prometheus-{{prometheus_version}}.{{system_type}}-{{system_cpu_arch}}/config/rules/alert.rules.yml"
+alertMgrConfigPath = "{{base_installed_path}}/alertmanager-{{alertmanager_version}}.{{system_type}}-{{system_cpu_arch}}/alertmanager.yml"

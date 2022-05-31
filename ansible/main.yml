@@ -1,0 +1,31 @@
+- hosts: prom_monitor
+  become: yes
+  become_user: root
+  vars:
+    # 这个要根据安装目录进行修改，配置安装包的位置
+    download_tmp_dir: /tmp 
+    # 远程的安装目录
+    base_installed_path: /usr/local/yucc
+    prometheus_version: 2.35.0
+    alertmanager_version: 0.24.0
+    # 配置监控的主机，既安装node_exporter的各个主机
+    prometheus_scrape_configs: ["localhost:19100"]
+    # 配置prometheus的地址, 端口号是默认的
+    prometheus_db_url: "http://localhost:19090"
+    # 配置alertmanager的地址，端口号是默认的
+    alertmanager_url: "localhsot:19093"
+    alertmanager_api_url: "http://{{alertmanager_url}}"
+    # 这里要配置具体数据库地址
+    alert_db_dns: "root:root+654321@tcp(173.8.42.95:13306)/tools?charset=utf8&parseTime=True"
+  roles:
+    - promserver
+    - alertmanager
+    - grafana
+    - rexpromagent
+
+- hosts: exporter
+  become: yes
+  become_user: root
+
+  roles:
+    - nodeexporter

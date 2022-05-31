@@ -1,0 +1,28 @@
+global:
+    smtp_smarthost: mail.yusys.com.cn:25
+    smtp_from: yucc-aiops-admin@yusys.com.cn
+    smtp_auth_username: yucc-aiops-admin
+    smtp_auth_password: Aiops123
+route:
+    group_interval: 10m
+    repeat_interval: 1h
+    group_by:
+        - alertname
+    receiver: web.hook
+    routes:
+        - match:
+            alertname: 测试yh
+          receiver: 测试yh-receiver
+        - match:
+            alertname: 测试2
+          receiver: 测试2-receiver
+receivers:
+    - name: 测试yh-receiver
+      email_configs:
+        - to: 123456@qq.com
+    - name: 测试2-receiver
+      email_configs:
+        - to: renzq@yusys.com.cn, renzq@yusys.com.cn
+    - name: web.hook
+      webhook_configs:
+        - url: http://localhost:5001

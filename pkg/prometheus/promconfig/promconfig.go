@@ -32,14 +32,14 @@ type AlertAnnotations struct {
 	Description string `yaml:"description" json:"description"`
 }
 
-func GeneratePromRuleFile(config *PromConfigRules, config_file_path string) error {
+func GeneratePromRuleFile(config *PromConfigRules, configFilePath string) error {
 
 	data, err := yaml.Marshal(config)
 	if err != nil {
 		log.Printf("parse the alert rule error, %s\n", err)
 		return err
 	}
-	err = ioutil.WriteFile(config_file_path, data, 0777)
+	err = ioutil.WriteFile(configFilePath, data, 0777)
 	if err != nil {
 		log.Printf("write the config file err, %s\n", err)
 		return err

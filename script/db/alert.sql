@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS t_alert_rule
     alert_level      tinyint default NULL comment '告警严重级别,严重1，高2，中3，低4',
     alert_type       tinyint default NULL comment '告警类型,告警1，预警2，故障3',
     noitce           varchar(2000) default NULL comment '告警通知信息',
+    receiver           varchar(2000) default NULL comment '告警通知信息',
     description      varchar(2000) default NULL comment '告警通知描述',
     create_uid       bigint default NULL  comment '创建人',
     state            VARCHAR(2) default NULL COMMENT '数据有效状态 \'U\'：正常 \'E\'：失效',

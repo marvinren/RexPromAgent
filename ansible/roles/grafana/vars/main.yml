@@ -1,0 +1,6 @@
+---
+download_tmp_dir: /tmp
+grafana_version: 8.5.3
+grafana_installed_path: /usr/local/yucc
+grafana_http_port: 13000
+grafana_api_url: "http://localhost:{{grafana_http_port}}"

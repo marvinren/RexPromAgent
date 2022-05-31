@@ -1,0 +1,20 @@
+---
+# handlers file for server
+- name: enable alertmanager
+  service:
+    name: alertmanager
+    daemon_reload: true
+    enabled: yes
+  become: yes
+
+- name: restart alertmanager
+  service:
+    name: alertmanager
+    state: restarted
+  become: yes
+
+- name: reload alertmanager
+  service:
+    name: alertmanager
+    state: reloaded
+  become: yes

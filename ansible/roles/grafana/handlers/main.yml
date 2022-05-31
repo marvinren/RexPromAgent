@@ -1,0 +1,20 @@
+---
+# handlers file for server
+- name: enable grafana
+  service:
+    name: grafana
+    daemon_reload: true
+    enabled: yes
+  become: yes
+
+- name: restart grafana
+  service:
+    name: grafana
+    state: restarted
+  become: yes
+
+- name: reload grafana
+  service:
+    name: grafana
+    state: reloaded
+  become: yes

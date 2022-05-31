@@ -1,0 +1,12 @@
+---
+- name: "Create datasource for prometheus"
+  grafana_datasource:
+    grafana_url: "{{grafana_api_url}}"
+    grafana_user: "admin"
+    grafana_password: "admin"
+    name: "monitor_prometheus"
+    ds_url: "{{prometheus_db_url}}"
+    ds_type: "prometheus"
+
+  tags:
+  - datasource

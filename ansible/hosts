@@ -1,0 +1,8 @@
+[prom]
+aiops04 ansible_ssh_user=root
+
+[prom_monitor]
+173.8.42.95 ansible_ssh_user=root system_cpu_arch=arm64 system_type=linux
+
+[exporter]
+173.8.42.95 ansible_ssh_user=root system_cpu_arch=arm64 system_type=linux

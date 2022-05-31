@@ -1,0 +1,17 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Grafana for Prometheus monitoring
+After=network-online.target
+
+[Service]
+Restart=on-failur
+ExecStop=/bin/kill -9 $MAINPID
+User=root
+Group=root
+CONF_DIR={{grafana_installed_path}}/grafana-{{grafana_version}}/conf
+
+ExecStart={{grafana_installed_path}}/grafana-{{grafana_version}}/bin/grafana-server
+
+[Install]
+WantedBy=multi-user.target

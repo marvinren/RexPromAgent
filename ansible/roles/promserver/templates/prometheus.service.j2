@@ -1,0 +1,57 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Prometheus
+After=network-online.target
+Requires=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=simple
+Environment="GOMAXPROCS={{ ansible_processor_vcpus|default(ansible_processor_count) }}"
+User=root
+Group=root
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart={{ prometheus_base_dir }}/prometheus \
+  --storage.tsdb.path={{ prometheus_db_dir }} \
+  --web.listen-address={{ prometheus_web_listen_address }} \
+  --config.file={{ prometheus_config_dir }}/prometheus.yml \
+  --web.enable-lifecycle --web.enable-admin-api
+
+CapabilityBoundingSet=CAP_SET_UID
+LimitNOFILE=65000
+LockPersonality=true
+NoNewPrivileges=true
+MemoryDenyWriteExecute=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectHome=true
+RemoveIPC=true
+RestrictSUIDSGID=true
+#SystemCallFilter=@signal @timer
+
+{% if prometheus_systemd_version | int >= 231 %}
+ReadWritePaths={{ prometheus_db_dir }}
+{% else %}
+ReadWriteDirectories={{ prometheus_db_dir }}
+{% endif %}
+
+{% if prometheus_systemd_version | int >= 232 %}
+PrivateUsers=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+{% else %}
+ProtectSystem=full
+{% endif %}
+
+{% if http_proxy is defined %}
+Environment="HTTP_PROXY={{ http_proxy }}"{% if https_proxy is defined %} "HTTPS_PROXY={{ https_proxy }}{% endif %}"
+{% endif %}
+
+SyslogIdentifier=prometheus
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

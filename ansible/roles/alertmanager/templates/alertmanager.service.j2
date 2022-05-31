@@ -1,0 +1,15 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Alertmanager for Prometheus monitoring
+After=network-online.target
+
+[Service]
+Restart=on-failur
+ExecStop=/bin/kill -9 $MAINPID
+User=root
+Group=root
+ExecStart={{ alertmanager_base_dir }}/alertmanager --config.file={{ alertmanager_base_dir }}/alertmanager.yml  --web.listen-address="{{ alertmanager_web_listen_address }}" --storage.path={{ alertmanager_db_dir}}
+
+[Install]
+WantedBy=multi-user.target

@@ -29,7 +29,7 @@ func TestWriteConfig(t *testing.T) {
 		[]AlertGroup{group1},
 	}
 
-	err := GeneratePromRuleFile(&rules, "./test.yml")
+	err := GeneratePromRuleFile(&rules, "./prom.yml")
 	if err != nil {
 		t.Fatal(err)
 	}

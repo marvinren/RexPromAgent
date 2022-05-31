@@ -11,6 +11,7 @@ type AlertRule struct {
 	Duration    string         `db:"duration"`
 	AlertLevel  string         `db:"alert_level"`
 	AlertType   string         `db:"alert_type"`
+	Receiver    sql.NullString `db:"receiver"`
 	Notice      string         `db:"noitce"`
 	State       string         `db:"state"`
 	Description string         `db:"description"`

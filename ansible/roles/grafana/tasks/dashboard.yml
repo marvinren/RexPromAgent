@@ -1,0 +1,17 @@
+---
+- name: Import grafana dashboards through API
+  uri:
+    url: "{{ grafana_api_url }}/api/dashboards/db"
+    user: "admin"
+    password: "admin"
+    force_basic_auth: true
+    method: POST
+    body_format: json
+    body: >
+      {
+        "dashboard": {{ lookup("file", "linux.json") }},
+        "overwrite": true,
+        "message": "Updated by ansible"
+      }
+  no_log: true
+  tags: dashboard
